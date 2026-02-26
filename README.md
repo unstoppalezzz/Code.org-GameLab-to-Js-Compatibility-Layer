@@ -33,5 +33,3 @@ Important: Do not open index.html directly in the browser.
 You need to serve the project using a local server (for example, Live Server in VS Code or any other web server).
 
 Open the project URL in your browser.
-
-This ensures all images and scripts load correctly.
