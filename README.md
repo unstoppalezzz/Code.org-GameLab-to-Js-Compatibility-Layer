@@ -4,7 +4,7 @@ This is a Compatibility Layer for code.org GameLab game to work in Js
 # Setup 
 Add your sprite images
 Place any images you want for your sprites in the `images/` folder.  
-Update the `imageFiles` array in `index.html`:
+Update the `imageFiles` array in `build.html`:
 
 ```js
 const imageFiles = [
