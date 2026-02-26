@@ -14,7 +14,7 @@ const imageFiles = [
 ``` 
 # Paste your Game Lab code
 
-Open the `<script>` at the end of `index.html`:
+Open the `<script>` at the end of `build.html`:
 
 ```html
 <script>
