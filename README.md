@@ -33,3 +33,8 @@ Important: Do not open index.html directly in the browser.
 You need to serve the project using a local server (for example, Live Server in VS Code or any other web server).
 
 Open the project URL in your browser.
+
+## Attribution
+
+This project uses [p5.js](https://p5js.org/), licensed under LGPL v2.1 or later.
+This project itself is licensed under [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
