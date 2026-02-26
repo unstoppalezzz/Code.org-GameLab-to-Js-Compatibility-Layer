@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Game Lab Compatibility (Offline)</title>
+
+<script src="https://cdn.jsdelivr.net/npm/p5@1.9.3/lib/p5.min.js"></script>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+canvas {
+  border: 2px solid #222;
+}
+</style>
+</head>
+<body tabindex="0">
+  <img id="flappybird" src="images/flappybird.png" style="display:none;">
+<img id="flappybird-wing" src="images/flappybird-wing.png" style="display:none;">
+<img id="star" src="images/star.png" style="display:none;">
+<script>
+
+let p5Instance;
+
+window.fill = window.fill || function(c){ console.warn("fill called before p5Instance ready:", c); };
+window.rect = window.rect || function(x,y,w,h){ console.warn("rect called before p5Instance ready:", x,y,w,h); };
+window.text = window.text || function(txt,x,y){ console.warn("text called before p5Instance ready:", txt,x,y); };
+window.textSize = window.textSize || function(s){};
+window.background = window.background || function(c){};
+window.image = window.image || function(img,x,y,w,h){};
+window.mouseIsPressed = window.mouseIsPressed || function(){ return false; };
+
+new p5((p) => {
+
+  p.setup = function() {
+    p.createCanvas(400, 400);
+    p.rectMode(p.CORNER);
+    document.body.focus();
+
+    window.fill = (c) => p.fill(c);
+    window.rect = (x, y, w, h) => p.rect(x, y, w, h);
+    window.background = (c) => p.background(c);
+    window.text = (txt, x, y) => p.text(txt, x, y);
+    window.textSize = (s) => p.textSize(s);
+    window.image = (img, x, y, w, h) => p.image(img, x, y, w, h);
+
+    window.mouseIsPressed = () => !!p.mouseIsPressed;
+
+    p5Instance = p;
+    console.log("p5 instance created");
+  }
+
+  let frameCounter = 0;
+const DRAW_EVERY = 2; 
+
+p.draw = function() {
+    frameCounter++;
+
+    if (frameCounter % DRAW_EVERY !== 0) return; 
+
+    if (typeof window.drawGame === "function") {
+      try {
+        window.drawGame();  
+      } catch(e) {
+        console.error("drawGame error:", e);
+      }
+    }
+}
+
+});
+</script>
+
+<script>
+
+class Sprite {
+  constructor(x, y, w=50, h=50) {
+    this.position = {x, y};
+    this.velocity = {x:0, y:0};
+    this.width = w;
+    this.height = h;
+    this.scale = 1;
+    this.visible = true;
+    this.images = {};
+    this.currentImage = null;
+  }
+
+  addImage(name, img) {
+    this.images[name] = img;
+    if (!this.currentImage) this.currentImage = img;
+  }
+
+  setAnimation(name) {
+    if (animations[name]) this.currentImage = animations[name];
+    else if (this.images[name]) this.currentImage = this.images[name];
+  }
+
+  update() {
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+  }
+
+  draw() {
+    if (!this.visible || !p5Instance) return;
+    if (this.currentImage) {
+      p5Instance.image(
+        this.currentImage,
+        this.position.x - (this.width*this.scale)/2,
+        this.position.y - (this.height*this.scale)/2,
+        this.width*this.scale,
+        this.height*this.scale
+      );
+    } else {
+      p5Instance.fill("orange");
+      p5Instance.rect(
+        this.position.x - (this.width*this.scale)/2,
+        this.position.y - (this.height*this.scale)/2,
+        this.width*this.scale,
+        this.height*this.scale
+      );
+    }
+  }
+}
+
+Sprite.prototype.isTouching = function(other) {
+    if (!other) return false;
+
+    const leftA   = this.x - this.width/2;
+    const rightA  = this.x + this.width/2;
+    const topA    = this.y - this.height/2;
+    const bottomA = this.y + this.height/2;
+
+    const leftB   = other.x - other.width/2;
+    const rightB  = other.x + other.width/2;
+    const topB    = other.y - other.height/2;
+    const bottomB = other.y + other.height/2;
+
+    const touching = !(rightA < leftB || leftA > rightB || bottomA < topB || topA > bottomB);
+
+    console.log(
+      `${this.currentImage ? "Sprite" : "Bird"} bounds:`, leftA, rightA, topA, bottomA,
+      "| Other bounds:", leftB, rightB, topB, bottomB,
+      "| Touching?", touching
+    );
+
+    return touching;
+};
+
+Object.defineProperty(Sprite.prototype,"x",{ get(){return this.position.x;}, set(v){this.position.x=v;} });
+Object.defineProperty(Sprite.prototype,"y",{ get(){return this.position.y;}, set(v){this.position.y=v;} });
+
+const allSprites = [];
+function createSprite(x, y, w, h){
+  const s = new Sprite(x, y, w, h);
+  allSprites.push(s);
+  return s;
+}
+
+function drawSprites(){
+  if (!p5Instance) return;
+  for (const s of allSprites) s.update();
+  for (const s of allSprites) s.draw();
+}
+
+function randomNumber(min, max){
+  if (typeof min !== "number" || typeof max !== "number") return 0;
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+const _keys = {};
+const _keysOnce = {};
+document.addEventListener("keydown", e=>{ _keys[e.key.toLowerCase()]=true; _keysOnce[e.key.toLowerCase()]=true; });
+document.addEventListener("keyup", e=>{ _keys[e.key.toLowerCase()]=false; _keysOnce[e.key.toLowerCase()]=false; });
+
+function keyDown(k){ 
+  if(k==="space") return _keys[" "]===true; 
+  return _keys[k.toLowerCase()]===true; 
+}
+
+function keyWentDown(k){ 
+  if(k==="space") k=" "; 
+  if(_keysOnce[k.toLowerCase()]){ 
+    _keysOnce[k.toLowerCase()]=false; 
+    return true;
+  } 
+  return false; 
+}
+
+function mouseDown(btn){ 
+  return btn==="leftButton" && !!mouseIsPressed(); 
+}
+
+const animations = {};
+function loadAnimation(name, src){ 
+  animations[name] = p5Instance ? p5Instance.loadImage(src) : null; 
+}
+</script>
+<script>
+//put your images
+const imageFiles = [
+  "img1",
+  "img2",
+
+];
+
+function preloadAllImages() {
+  if (!p5Instance) {
+    console.warn("p5Instance not ready, cannot load images yet.");
+    return;
+  }
+  imageFiles.forEach(filename => {
+    const name = filename.replace(/\.[^/.]+$/, ""); 
+    const path = "/images/" + filename;
+    animations[name] = p5Instance.loadImage(path, 
+      img => console.log("Loaded:", filename), 
+      err => console.error("Failed to load:", filename, err)
+    );
+  });
+}
+
+let preloadCheckInterval = setInterval(() => {
+  if (p5Instance) {
+    clearInterval(preloadCheckInterval);
+    preloadAllImages();
+  }
+}, 50);
+
+</script>
+<script>
+//Paste Code.org GameLab code
+//change draw(); to drawGame();
+
+</script>
+
+</body>
+</html>
