@@ -17,7 +17,9 @@ Place all your sprite images in the `img/` folder.
 img/player/sprite_0.png
 img/player/sprite_1.png
 img/player/sprite_2.png
-``` 
+```
+with player being the sprites given name
+
 # Paste your Game Lab code
 
 Open the `<script>` at the end of `game.html`:
