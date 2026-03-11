@@ -19,17 +19,6 @@ img/player/sprite_2.png
 ```
 with player being the given sprites name
 
-# Paste your Game Lab code
-
-Open the `<script>` at the end of `game.html`:
-
-```html
-<script>
-// Paste Code.org GameLab code
-// change draw(); to drawGame();
-</script>
-``` 
-
 ---
 
 ### 2. Paste your GameLab code
