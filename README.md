@@ -1,16 +1,22 @@
-# Code.org-GameLab-to-Js-Compatibility-Layer
-This is a Compatibility Layer for code.org GameLab game to work in Js
+# Code.org GameLab → JS Compatibility Layer
 
-# Setup 
-Add your sprite images
-Place any images you want for your sprites in the `images/` folder.  
-Update the `imageFiles` array in `game.html`:
+This project provides a **compatibility layer** to run Code.org GameLab games in plain JavaScript using HTML5 `<canvas>`.  
+It supports sprites, animations, text, input, and collisions.
+
+---
+
+## Setup
+
+### 1. Add your sprite images
+
+Place all your sprite images in the `img/` folder.
+
+- For animations, use a subfolder with frames like:
 
 ```js
-const imageFiles = [
-  "img1.png",   // sprites
-  "img2.png",   // sprites
-];
+img/player/sprite_0.png
+img/player/sprite_1.png
+img/player/sprite_2.png
 ``` 
 # Paste your Game Lab code
 
@@ -22,19 +28,27 @@ Open the `<script>` at the end of `game.html`:
 // change draw(); to drawGame();
 </script>
 ``` 
-Copy your Code.org Game Lab code inside this <script> tag.
 
-Rename draw() to drawGame() so it works with this template.
+---
 
-4. Run on a local server
+### 2. Paste your GameLab code
 
-Important: Do not open index.html directly in the browser.
+Open `game.js` and find the placeholder:
 
-You need to serve the project using a local server (for example, Live Server in VS Code or any other web server).
+```javascript
+// paste your gamelab code here
+``` 
+Copy your Code.org GameLab code into this section.
 
-Open the project URL in your browser.
+The layer will automatically call draw() every frame.
+Example:
 
-## Attribution
+function draw() {
+  background("black");
+  textSize(20);
+  fill("white");
+  text("Hello World!", 100, 100);
+}
+Open index.html in your browser.
 
-This project uses [p5.js](https://p5js.org/), licensed under LGPL v2.1 or later.
-This project itself is licensed under [GPL 3.0](https://www.gnu.org/licenses/gpl-3.0.en.html).
+3. Run the project
